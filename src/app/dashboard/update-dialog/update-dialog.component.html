@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Update repository</h2>
+<form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content style="min-height: 250px;">
+        <h4>Message: </h4>
+        <p>{{message}}</p>
+        <mat-slide-toggle formControlName="auto_merge" matTooltip="Enabling this will merge the changes to your changes." matTooltipPosition="after">
+            Auto merge
+        </mat-slide-toggle><br>
+        <mat-slide-toggle [disabled]="updateForm.controls.leave_merge_conflict.value" formControlName="force_update" matTooltip="This will delete all of your changes and completely overwrite with new ones" matTooltipPosition="after">
+            Force update
+        </mat-slide-toggle><br>
+        <mat-slide-toggle [disabled]="updateForm.controls.force_update.value" formControlName="leave_merge_conflict" matTooltip="Leaves merge conflicts in the repository. It's up to the user to solve them" matTooltipPosition="after">
+            Leave merge conflict
+        </mat-slide-toggle><br>
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+        <button mat-button type="button" (click)="onClose()">Cancel</button>
+        <span fxFlex='1 1 auto'></span>
+        <button type="submit" mat-flat-button color="primary">Update</button>
+    </div>
+</form>

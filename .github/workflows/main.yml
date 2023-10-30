@@ -1,0 +1,69 @@
+on:
+  push:
+    tags: -'*'
+  create:
+    tags: -'*'
+
+name: Build Angular
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Changelog
+        uses: flowide/changelog-action@main
+        id: Changelog
+        with:
+          to-tag: ${{github.ref}}
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Get version from tag
+        uses: olegtarasov/get-tag@v2.1
+        id: tagName
+        with:
+          tagRegex: '(?<version>v[0-9]+\.[0-9]+\.[0-9]+)'
+      - name: Build
+        run: |
+          npm i
+          node pre-build.js --version ${{steps.tagName.outputs.version}}
+          ./monaco_workaround.sh
+          npm run build-prod
+      - name: Zip project
+        run: |
+          zip -r release_files.zip dist
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}
+      - name: Upload a Release Asset
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url:  ${{steps.create_release.outputs.upload_url}}
+          asset_path: ./release_files.zip
+          asset_name: release_files.zip
+          asset_content_type: application/zip

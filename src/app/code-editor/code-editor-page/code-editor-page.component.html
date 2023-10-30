@@ -1,0 +1,26 @@
+
+
+
+<div class="container">
+    <app-header *ngIf="fullScreen">
+
+        <h2 slot="center">{{repo?.name}}</h2>
+
+        <button mat-stroked-button [disabled]="websocketConnected" style="margin: 0 1em 0 1em;" (click)="reconnectWebsocket()">
+            {{websocketConnected ? 'Connected' : 'Reconnect'}}
+        </button>
+
+        <button mat-icon-button routerLink="/repos">
+            <mat-icon>
+                close
+            </mat-icon>
+        </button>
+
+    </app-header>
+    <menu-bar #menuBar [setting]="menuBarSetting" (menuItemClicked)="menuAction($event)"></menu-bar>
+    <mat-divider *ngIf="showToolBar"></mat-divider>
+    <tool-bar #toolBar *ngIf="showToolBar" [toolBarItems]="toolBarItems" (buttonClicked)="menuAction($event)"></tool-bar>
+    
+    <golden-layout-host #glHost [injector]="injector"></golden-layout-host>
+</div>
+

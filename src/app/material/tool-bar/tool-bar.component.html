@@ -1,0 +1,40 @@
+<mat-action-row>
+
+
+
+    <div class="start">
+
+        <ng-container *ngFor="let item of toolBarItems | forFilter : 'align' : 'start'">
+            <ng-template *ngTemplateOutlet="toolbarButton; context: {item:item}"></ng-template>
+        </ng-container>
+    </div>
+
+
+    <div class="center">
+        <ng-container *ngFor="let item of toolBarItems | forFilter : 'align' : 'center'">
+            <ng-template *ngTemplateOutlet="toolbarButton; context: {item:item}"></ng-template>
+        </ng-container>
+    </div>
+
+
+    <div class="end">
+        <ng-container *ngFor="let item of toolBarItems | forFilter : 'align' : 'end'">
+            <ng-template *ngTemplateOutlet="toolbarButton; context: {item:item}"></ng-template>
+        </ng-container>
+    </div>
+
+    
+
+</mat-action-row>
+
+
+<ng-template #toolbarButton let-item="item">
+    <button mat-icon-button fxFlexAlign="end" *ngIf="!item.display.big" [title]="item.title" (click)="buttonClicked.emit(item)">
+        <mat-icon [style.color]="item.display.color">{{item.display.icon}}</mat-icon>
+    </button>
+
+    <button mat-stroked-button fxFlexAlign="end" *ngIf="item.display.big" [title]="item.title" class="big-button" (click)="buttonClicked.emit(item)">
+        <mat-icon [style.color]="item.display.color">{{item.display.icon}}</mat-icon>
+        <span>{{item.title}}</span>
+    </button>
+</ng-template>

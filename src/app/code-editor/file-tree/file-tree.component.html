@@ -1,0 +1,88 @@
+<div class="container" dragOverVisible="upload" (dragover)="$event.preventDefault()" (drop)="filesDropped($event)">
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        
+        <!-- This is the tree node template for expandable nodes -->
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+          
+          <div style="width: 100%;" fxLayout="row" fxLayoutAlign="start center" matRipple [class.hidden]="node.name.startsWith('.')">
+
+            <div matTreeNodeToggle fxFlex="1 1 auto">
+              <button mat-icon-button >
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{treeControl.isExpanded(node) ? 'folder_open' : 'folder'}}
+                </mat-icon>
+              </button>
+              <span>
+                {{ (node.name.length > 20) ? (node.name | slice:0:20) + '...' : node.name }}  
+              </span>
+            </div>
+
+            <span fxFlex="1 1 auto"><!--spacer--></span>
+  
+            <button mat-icon-button [matMenuTriggerFor]="actionMenu" [matMenuTriggerData]="{path:node.path,isFolder:true}" class="action-button">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
+          
+
+        </mat-tree-node>
+
+
+        <!-- This is the tree node template for leaf nodes -->
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+
+          <div style="width: 100%;" fxLayout="row" fxLayoutAlign="start center" matRipple [class.opened]="focusedTab?.path === node?.path" [class.hidden]="node.name.startsWith('.')"> 
+
+            <div fxFlex="1 1 auto" (click)="fileClicked(node)">
+              
+              <button mat-icon-button>
+                <mat-icon>description</mat-icon>
+              </button>
+              <span [class.git-dirty]="isGitDirty(node.path)" [title]="isGitDirty(node.path) ? 'modified' : ''">
+                {{ (node.name.length > 20) ? (node.name | slice:0:20) + '...' : node.name }}  
+              </span>
+            </div>
+
+            <span fxFlex="1 1 auto"><!--spacer--></span>
+
+            <small *ngIf="isGitDirty(node.path)" class="git-dirty">M</small> 
+
+            <button mat-icon-button [matMenuTriggerFor]="actionMenu" [matMenuTriggerData]="{path:node.path,isFolder:false,node:node}" class="action-button">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
+          
+        </mat-tree-node>
+
+      </mat-tree>
+</div>
+
+
+<mat-menu #actionMenu >
+  <ng-template matMenuContent let-path="path" let-isFolder="isFolder" let-node="node">
+    <button mat-menu-item (click)="renameFile(path)" class="action-menu-item">
+      <mat-icon>drive_file_rename_outline</mat-icon>
+      Rename
+    </button>
+    <button mat-menu-item (click)="moveFile(path)" class="action-menu-item">
+      <mat-icon>drive_file_move</mat-icon>  
+      Move
+    </button>
+    <button mat-menu-item (click)="deleteFile(path)" class="action-menu-item">
+      <mat-icon>delete</mat-icon>
+      Delete
+    </button>
+    <button *ngIf="isFolder" mat-menu-item (click)="newFileForFolder(path)" class="action-menu-item">
+      <mat-icon>note_add</mat-icon>
+      New File
+    </button>
+    <button *ngIf="!isFolder" mat-menu-item (click)="openInNewTab(node)" class="action-menu-item">
+      <mat-icon>open_in_new</mat-icon>
+      Open in new tab
+    </button>
+    <button *ngIf="!isFolder" mat-menu-item (click)="downloadFile(node)" class="action-menu-item">
+      <mat-icon>download</mat-icon>
+      Download
+    </button>
+  </ng-template>
+</mat-menu>

@@ -1,0 +1,30 @@
+<app-browser-frame [state]="runnerState?.status" style="height: 100%;" (refreshClick)="refresh()" (popout)="popout()">
+    <iframe class="frame"
+        maxSize
+        [src]="previewHandler.url$ | async | urlsafe"
+        frameBorder="0"
+        *ngIf=" !frameRefresh && runnerState?.status === 'active'"
+        #frame
+        >
+    </iframe>
+
+    <div class="overlay" maxSize fxLayout="column" fxLayoutAlign="center center" *ngIf="runnerState?.status !== 'active' || frameRefresh">
+        
+
+        <ng-container [ngSwitch]="runnerState?.status">
+
+            <ng-container *ngSwitchCase="'inactive'">
+                <h1 style="opacity: 0.6;">Script is inactive</h1>
+            </ng-container>
+
+            <ng-container *ngSwitchDefault>
+                <h1 style="opacity: 0.6;">Loading...</h1>
+                <div style="width: 50%;height: 150px;">
+                    <mat-progress-bar mode="buffer"></mat-progress-bar>
+                </div>
+            </ng-container>
+
+        </ng-container>
+    </div>
+
+</app-browser-frame>

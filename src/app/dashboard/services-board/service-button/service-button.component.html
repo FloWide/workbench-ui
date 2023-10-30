@@ -1,0 +1,32 @@
+ <mat-expansion-panel hideToggle="" class="service-button" (expandedChange)="expandedChanged($event)">
+    <mat-expansion-panel-header style="padding: 0;">
+      <mat-panel-title>
+            <div 
+                class="status"
+                [style.background]="getStateColor(serviceModel.state)"
+                [title]="serviceModel?.state ?? '' | titlecase"
+            ></div>
+            <mat-select *ngIf="sortedServices.length > 1" [(value)]="serviceModel" (click)="$event.stopPropagation()"> 
+                <mat-option *ngFor="let item of sortedServices" [value]="item">
+                    <span *ngIf="!(item.owner_name === me?.username || item.owner_name === 'apps-admin')">@{{item.owner_name}} -</span> {{item.name}}/{{item.version}}
+                </mat-option>
+            </mat-select>
+            <span *ngIf="sortedServices.length === 1">
+                <span *ngIf="!(serviceModel.owner_name === me?.username || serviceModel.owner_name === 'apps-admin')">@{{serviceModel.owner_name}} -</span> {{serviceModel.name}}/{{serviceModel.version}}
+            </span>
+            &nbsp;
+            <span *ngIf="serviceModel?.started_at">&nbsp;Started {{getRunningSince()}}</span>        
+      </mat-panel-title>
+
+      <mat-panel-description style="margin: 0;">
+
+        <button mat-icon-button title="Restart" (click)="$event.stopPropagation(); onRestart()">
+            <mat-icon>refresh</mat-icon>
+        </button>
+
+        <mat-slide-toggle (click)="$event.stopPropagation()" [labelPosition]="'before'" [checked]="serviceModel?.enabled" (change)="toggleEnabed($event)" >Enabled</mat-slide-toggle>
+      </mat-panel-description>
+
+    </mat-expansion-panel-header>
+    <monaco-code-editor [value]="logs" style="height: 300px;max-height: 500px;width: 100%;" [options]="monacoOptions"></monaco-code-editor>
+</mat-expansion-panel>

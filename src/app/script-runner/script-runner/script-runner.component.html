@@ -1,0 +1,59 @@
+<div class="container" style="display: flex;flex-direction: column;">
+    <app-header *ngIf="header">
+        
+        <h2 slot="center">{{scriptModel?.name}}</h2>
+
+        <button mat-icon-button (click)="scriptControltClick()" [title]="scriptModel?.state === 'inactive' ? 'Start' : 'Stop' ">
+                <mat-icon>
+                        {{scriptModel?.state === 'inactive' ? 'play_arrow' : 'close'}}
+                </mat-icon>
+        </button>
+    </app-header>
+
+    <div class="content">
+        <ng-container *ngIf="scriptModel?.type === 'streamlit'">
+            <ng-container *ngIf="currentScriptState === 'inactive'">
+                <h1 style="opacity: 0.6;">Application is inactive</h1>
+            </ng-container>
+            <iframe
+            class="frame"
+            maxSize
+            [src]="url | urlsafe"
+            frameBorder="0"
+            *ngIf=" !frameRefresh && currentScriptState === 'active'"
+            #frame
+            >
+            </iframe>
+            <mat-card class="floating-terminal" [style.visibility]=" showTerminal ? '' : 'hidden' ">
+                <mat-card-title cdkDrag cdkDragHandle cdkDragRootElement=".floating-terminal">
+                    <h3 style="margin: 0;">Terminal</h3>
+                    <span style="flex: 1 1 auto;"></span>
+                    <button mat-icon-button (click)="showTerminal = false">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-card-title>
+                <mat-card-content>
+                    <div style="box-sizing: border-box;width: 600px;height: 300px;">
+                        <xterm
+                            maxSize
+                            [websocketConnection]="scriptService.getOutputWebsocketUrl(scriptModel?.compound_id)"
+                        >
+                        </xterm>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        <script-loading maxSize *ngIf="currentScriptState === 'starting' || frameRefresh"></script-loading>
+        </ng-container>
+        <ng-container *ngIf="scriptModel?.type === 'python'">
+                <div style="padding: 10px; box-sizing: border-box;width: 100%;height: 100%;">
+                    <xterm
+                        maxSize
+                        [websocketConnection]="scriptService.getOutputWebsocketUrl(scriptModel?.compound_id)"
+                    >
+                    </xterm>
+                </div>
+        </ng-container>
+    </div>
+
+</div>
+

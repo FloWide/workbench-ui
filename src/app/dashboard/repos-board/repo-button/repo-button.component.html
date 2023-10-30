@@ -1,0 +1,67 @@
+<button mat-raised-button class="repo-button" style="height: fit-content;cursor: default;">
+
+    <div class="container">
+        <div class="container-left">
+            <div class="title">
+                <h1 style="margin: 0;">{{repo?.name}} <small>ID: {{repo?.git_service_id}}</small> </h1>
+                
+            </div>
+            <div class="details">
+                <mat-chip-list>
+                    <a [href]="repo?.http_url" (click)="$event.stopPropagation()">
+                        <mat-chip title="Current branch" style="cursor: pointer;">
+                            <mat-icon fontSet="fa-solid" fontIcon="fa-code-branch" style="height: 10px;width:10px"></mat-icon>
+                            {{gitState?.head}}
+                        </mat-chip>
+                    </a>
+                    <a role="button" (click)="openReleaseList()">
+                        <mat-chip title="Releases" style="cursor: pointer;">
+                            <mat-icon fontSet="fa-solid" fontIcon="fa-box-archive" style="height: 10px;width:10px"></mat-icon>
+                            &nbsp; {{tags.length}}
+                        </mat-chip>
+                    </a>
+                    <mat-chip *ngIf="(forkParent$ | async) as result" title="Forked from">
+                        <mat-icon fontSet="fa-solid" fontIcon="fa-code-fork" style="height: 10px;width:10px"></mat-icon>
+                        {{result.owner_name}} / {{result.name}}
+                    </mat-chip>
+                    <a role="button" (click)="update.emit(repo)">
+                        <mat-chip *ngIf="!(upstream_results === GIT_ANALYZE_RESULTS.UP_TO_DATE || upstream_results === GIT_ANALYZE_RESULTS.NO_ACTION)" selected [color]="'warn'" style="cursor: pointer;">
+                            <mat-icon fontSet="fa-solid" fontIcon="fa-exclamation" style="height: 10px;width:10px"></mat-icon>
+                            Update
+                        </mat-chip>
+                    </a>
+                </mat-chip-list>
+            </div>
+        
+        </div>
+        <div class="container-right">
+            
+            <button mat-icon-button (click)="edit.emit(repo)" title="Edit">
+                <mat-icon>
+                    edit
+                </mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="createRelease()" title="Create Release" *requiresPermissions="['create:release']">
+                <mat-icon fontSet="fa-solid" fontIcon="fa-box-archive">
+                    
+                </mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="fork.emit(repo)" title="Fork" *requiresPermissions="['fork:repo']">
+                <mat-icon fontSet="fa-solid" fontIcon="fa-code-fork">
+                    
+                </mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="delete.emit(repo)" title="Delete">
+                <mat-icon>
+                    delete
+                </mat-icon>
+            </button>
+
+        </div>
+    </div>
+
+
+</button>

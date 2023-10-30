@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Fork repository</h2>
+<form [formGroup]="forkForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content>
+        <mat-form-field style="width: 100%;" appearance="fill">
+            <mat-label>Repository as</mat-label>
+            <input matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field style="width:100%" appearance="fill">
+            <mat-label>For user</mat-label>
+            <mat-select formControlName="user">
+            <mat-option *ngFor="let item of data.users | keyvalue" [value]="item.value.git_service_id">
+                {{item.value.username}} ({{item.value.email}})
+            </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+        <button mat-button type="button" (click)="onClose()">Cancel</button>
+        <span fxFlex='1 1 auto'></span>
+        <button type="submit" mat-flat-button color="primary" [disabled]="!forkForm.valid">Fork</button>
+    </div>
+</form>
